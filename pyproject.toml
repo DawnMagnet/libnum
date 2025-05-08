@@ -1,8 +1,8 @@
-[tool.poetry]
+[project]
 name = "libnum"
-version = "1.7.1"
+version = "1.7.2"
 description = "Working with numbers (primes, modular, etc.)"
-authors = ["hellman"]
+authors = [{ "name" = "hellman" }]
 license = "MIT"
 readme = "README.md"
 keywords = ["numbers", "modular", "cryptography", "number theory"]
@@ -11,15 +11,13 @@ classifiers = [
     'Topic :: Scientific/Engineering :: Mathematics',
     'Topic :: Security :: Cryptography',
 ]
-
-[tool.poetry.urls]
-homepage = "http://github.com/hellman/libnum"
-
-[tool.poetry.dependencies]
-python = "^3.4"
-
-[tool.poetry.dev-dependencies]
+dependencies = []
+requires-python = ">= 3.6"
 
 [build-system]
-requires = ["poetry-core>=1.0.0a5"]
-build-backend = "poetry.core.masonry.api"
+requires = ["pdm-backend"]
+build-backend = "pdm.backend"
+
+[tool.rye]
+managed = true
+dev-dependencies = ["pytest>=8.3.5"]

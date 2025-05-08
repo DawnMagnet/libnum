@@ -1,11 +1,12 @@
 import random
 from itertools import product
+from typing import Any, Dict, Iterator, List, Optional, Tuple
 
 from .common import extract_prime_power
-from .modular import solve_crt, invmod
+from .modular import invmod, solve_crt
 
 
-def has_sqrtmod(a, factors=None):
+def has_sqrtmod(a: int, factors: Dict[int, int]) -> bool:
     """
     Check if @a is quadratic residue, factorization needed
     @factors - list of (prime, power) tuples
@@ -22,28 +23,24 @@ def has_sqrtmod(a, factors=None):
     return True
 
 
-def sqrtmod(a, factors):
+def sqrtmod(a: int, factors: Dict[int, int]) -> Iterator[int]:
     """
     x ^ 2 = a (mod *factors).
     Yield square roots by product of @factors as modulus.
     @factors - list of (prime, power) tuples
     """
-    coprime_factors = [p ** k for p, k in factors.items()]
+    coprime_factors = [p**k for p, k in factors.items()]
 
-    sqrts = []
+    sqrts: List[List[int]] = []
     for i, (p, k) in enumerate(factors.items()):
-        # it's bad that all roots by each modulus are calculated here
-        # - we can start yielding roots faster
-        sqrts.append(
-            list(sqrtmod_prime_power(a % coprime_factors[i], p, k))
-        )
+        sqrts.append(list(sqrtmod_prime_power(a % coprime_factors[i], p, k)))
 
     for rems in product(*sqrts):
-        yield solve_crt(rems, coprime_factors)
+        yield solve_crt(list(rems), coprime_factors)
     return
 
 
-def has_sqrtmod_prime_power(a, p, n=1):
+def has_sqrtmod_prime_power(a: int, p: int, n: int = 1) -> bool:
     """
     Check if @a (mod @p**@n) is quadratic residue, @p is prime.
     """
@@ -53,7 +50,7 @@ def has_sqrtmod_prime_power(a, p, n=1):
     if n < 1:
         raise ValueError("Prime power must be positive: " + str(n))
 
-    a = a % (p ** n)
+    a = a % (p**n)
 
     if a in (0, 1):
         return True
@@ -71,7 +68,7 @@ def has_sqrtmod_prime_power(a, p, n=1):
     return jacobi(a, p) == 1
 
 
-def sqrtmod_prime_power(a, p, k=1):
+def sqrtmod_prime_power(a: int, p: int, k: int = 1) -> Iterator[int]:
     """
     Yield square roots of @a mod @p**@k,
     @p - prime
@@ -87,11 +84,11 @@ def sqrtmod_prime_power(a, p, k=1):
         powers.append(pow_p)
 
     # x**2 == a (mod p),  p is prime
-    def sqrtmod_prime(a, p):
+    def sqrtmod_prime(a: int, p: int) -> Tuple[int, ...]:
         if a == 0:
             return (0,)
         if a == 1:
-            return (1, p-1) if p != 2 else (1,)
+            return (1, p - 1) if p != 2 else (1,)
 
         if jacobi(a, p) == -1:
             raise ValueError("No square root for %d (mod %d)" % (a, p))
@@ -115,11 +112,11 @@ def sqrtmod_prime_power(a, p, k=1):
         return (r, (-r) % p)  # both roots
 
     # x**2 == a (mod p**k),  p is prime,  gcd(a, p) == 1
-    def sqrtmod_prime_power_for_coprime(a, p, k):
+    def sqrtmod_prime_power_for_coprime(a: int, p: int, k: int) -> Tuple[int, ...]:
         if a == 1:
             if p == 2:
                 if k == 1:
-                    return (1, )
+                    return (1,)
                 if k == 2:
                     return (1, 3)
                 if k == 3:
@@ -147,7 +144,7 @@ def sqrtmod_prime_power(a, p, k=1):
                 roots = next_roots
 
             roots = [pow_p - r for r in roots] + list(roots)
-            return roots
+            return tuple(roots)
 
         else:  # p >= 3
             r = sqrtmod_prime(a, p)[0]  # any root
@@ -156,7 +153,7 @@ def sqrtmod_prime_power(a, p, k=1):
                 next_powind = min(powind * 2, k)
                 # Represent root:  x = +- (r  +  p**powind * t1)
                 b = (a - r**2) % powers[next_powind]
-                b = (b * invmod(2*r, powers[next_powind])) % powers[next_powind]
+                b = (b * invmod(2 * r, powers[next_powind])) % powers[next_powind]
                 if b:
                     if b % powers[powind]:
                         raise ValueError("No square root for given value")
@@ -172,7 +169,7 @@ def sqrtmod_prime_power(a, p, k=1):
         return
 
     # x**2 == 0 (mod p**k),  p is prime
-    def sqrt_for_zero(p, k):
+    def sqrt_for_zero(p: int, k: int) -> List[int]:
         roots = [0]
         start_k = (k // 2 + 1) if k & 1 else (k // 2)
 
@@ -222,7 +219,7 @@ def sqrtmod_prime_power(a, p, k=1):
     return
 
 
-def jacobi(a, n):
+def jacobi(a: int, n: int) -> int:
     """
     Return Jacobi symbol (or Legendre symbol if n is prime)
     """

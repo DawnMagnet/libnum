@@ -1,10 +1,10 @@
 import math
 import random
-
 from functools import reduce
+from typing import Tuple
 
 
-def len_in_bits(n):
+def len_in_bits(n: int) -> int:
     """
     Return number of bits in binary representation of @n.
     Probably deprecated by .bit_length().
@@ -14,18 +14,18 @@ def len_in_bits(n):
     return n.bit_length()
 
 
-def randint_bits(size):
+def randint_bits(size: int) -> int:
     return random.getrandbits(size) | (1 << (size - 1))
 
 
-def ceil(x, y):
+def ceil(x: int, y: int) -> int:
     """
     Divide x by y with ceiling.
     """
     return (x + y - 1) // y
 
 
-def nroot(x, n):
+def nroot(x: int, n: int) -> int:
     """
     Return truncated n'th root of x.
     Using binary search.
@@ -44,15 +44,16 @@ def nroot(x, n):
             raise ValueError("can't extract even root of negative")
 
     high = 1
-    while high ** n <= x:
+    while high**n <= x:
         high <<= 1
 
     low = high >> 1
+    mid = (low + high) >> 1
     while low < high:
         mid = (low + high) >> 1
-        if low < mid and mid ** n < x:
+        if low < mid and mid**n < x:
             low = mid
-        elif high > mid and mid ** n > x:
+        elif high > mid and mid**n > x:
             high = mid
         else:
             return sign * mid
@@ -62,7 +63,7 @@ def nroot(x, n):
 _gcd = math.gcd
 
 
-def _lcm(a, b):
+def _lcm(a: int, b: int) -> int:
     """
     Return lowest common multiple.
     """
@@ -71,21 +72,21 @@ def _lcm(a, b):
     return abs(a * b) // _gcd(a, b)
 
 
-def gcd(*lst):
+def gcd(*lst: int) -> int:
     """
     Return gcd of a variable number of arguments.
     """
     return abs(reduce(lambda a, b: _gcd(a, b), lst))
 
 
-def lcm(*lst):
+def lcm(*lst: int) -> int:
     """
     Return lcm of a variable number of arguments.
     """
     return abs(reduce(lambda a, b: _lcm(a, b), lst))
 
 
-def xgcd(a, b):
+def xgcd(a: int, b: int) -> Tuple[int, int, int]:
     """
     Extented Euclid GCD algorithm.
     Return (x, y, g) : a * x + b * y = gcd(a, b) = g.
@@ -109,7 +110,7 @@ def xgcd(a, b):
     return ppx, ppy, a
 
 
-def extract_prime_power(a, p):
+def extract_prime_power(a: int, p: int) -> Tuple[int, int]:
     """
     Return s, t such that  a = p**s * t,  t % p = 0
     """

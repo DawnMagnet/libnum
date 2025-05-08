@@ -8,15 +8,15 @@ libnum - Python library for some numbers functions:
 # commonly used things
 from fractions import Fraction
 
-from .primes import *
-from .factorize import *
-from .common import *
-from .modular import *
-from .sqrtmod import *
-from .stuff import *
-from .strings import *
-from .chains import *
 from . import ecc
+from .chains import *
+from .common import *
+from .factorize import *
+from .modular import *
+from .primes import *
+from .sqrtmod import *
+from .strings import *
+from .stuff import *
 
 
 # TODO: Add doctest after we have better docs

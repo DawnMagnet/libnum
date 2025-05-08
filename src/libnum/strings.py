@@ -1,7 +1,9 @@
+from typing import Union
+
 from .common import len_in_bits
 
 
-def s2n(s):
+def s2n(s: Union[str, bytes]) -> int:
     r"""
     String to number (big endian).
 
@@ -15,7 +17,7 @@ def s2n(s):
     return int.from_bytes(s, "big")
 
 
-def n2s(n):
+def n2s(n: int) -> bytes:
     r"""
     Number to string (big endian).
 
@@ -29,7 +31,7 @@ def n2s(n):
     return n.to_bytes(nbytes, "big")
 
 
-def s2b(s):
+def s2b(s: Union[str, bytes]) -> str:
     """
     String to binary.
 
@@ -40,7 +42,7 @@ def s2b(s):
     return "0" * ((8 - len(res)) % 8) + res
 
 
-def b2s(b):
+def b2s(b: str) -> bytes:
     """
     Binary to string.
 

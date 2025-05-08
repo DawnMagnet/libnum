@@ -1,5 +1,6 @@
 import pytest
-from libnum import len_in_bits, gcd, lcm, nroot
+
+from libnum import gcd, lcm, len_in_bits, nroot
 
 
 def test_len_in_bits():
@@ -23,7 +24,7 @@ def test_len_in_bits():
 def test_nroot():
     for x in range(0, 100):
         for p in range(1, 3):
-            n = x ** p
+            n = x**p
             assert nroot(n, p) == x
 
     assert nroot(-64, 3) == -4

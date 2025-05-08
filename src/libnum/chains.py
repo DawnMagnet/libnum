@@ -1,7 +1,9 @@
-from libnum import nroot, gcd, Fraction
+from fractions import Fraction
+
+from .common import gcd, nroot
 
 
-class Chain(object):
+class Chain:
     def __init__(self, *args):
         self._chain = []
         self._frac = None
@@ -15,11 +17,11 @@ class Chain(object):
         r = Fraction(0, 1)
         for x in reversed(self.chain):
             r = Fraction(1, x + r)
-        return 1/r
+        return 1 / r
 
     def _calcChain(self):
         r = []
-        a, b = self.frac.numerator, self.frac.denominator
+        a, b = self.frac.numerator, self.frac.denominator  # type: ignore
         while b != 1:
             r.append(a / b)
             a, b = b, a % b
@@ -63,9 +65,9 @@ class Chain(object):
 
 
 def sqrt_chained_fractions(n, limit=None):
-    '''
+    """
     E.g. sqrt_chained_fractions(13) = [3,(1,1,1,1,6)]
-    '''
+    """
     s = nroot(n, 2)
     if s**2 == n:
         return [s]
@@ -90,14 +92,14 @@ def sqrt_chained_fractions(n, limit=None):
 
 
 def _sqrt_iter(n, s, t, a, b):
-    '''
+    """
     take t*(sqrt(n)+a)/b
     s = floor(sqrt(n))
     return (v, next fraction params t, a, b)
-    '''
+    """
     v = t * (s + a) // b
     t2 = b
-    b2 = t * (n - (b * v - a)**2)
+    b2 = t * (n - (b * v - a) ** 2)
     a2 = b * v - a
     g = gcd(t2, b2)
     t2 //= g
@@ -105,6 +107,6 @@ def _sqrt_iter(n, s, t, a, b):
     return v, (t2, a2, b2)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     for v in (2, 3, 5, 6, 7, 8, 10, 11, 12, 13, 1337, 31337):
         print("sqrt(%d): %s" % (v, repr(sqrt_chained_fractions(v))))

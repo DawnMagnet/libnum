@@ -1,20 +1,20 @@
 import math
-import random
 import operator
-
+import random
 from functools import reduce
+from typing import List, Optional
 
+from .common import extract_prime_power, gcd, len_in_bits, randint_bits
 from .sqrtmod import jacobi
-from .common import len_in_bits, gcd, extract_prime_power, randint_bits
 from .strings import s2n
 
-_primes = [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31]
-_small_primes_product = 1
-_primes_bits = [[] for i in range(11)]
-_primes_mask = []
+_primes: List[int] = [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31]
+_small_primes_product: int = 1
+_primes_bits: List[List[int]] = [[] for i in range(11)]
+_primes_mask: List[bool] = []
 
 
-def _init():
+def _init() -> None:
     global _small_primes_product, _primes, _primes_bits, _primes_mask
     _primes = primes(1024)
     for p in _primes:
@@ -24,7 +24,7 @@ def _init():
     return
 
 
-def primes(until):
+def primes(until: int) -> List[int]:
     """
     Return list of primes not greater than @until. Rather slow.
     """
@@ -51,7 +51,7 @@ def primes(until):
     return _primes
 
 
-def generate_prime(size, k=25):
+def generate_prime(size: int, k: int = 25) -> int:
     """
     Generate a pseudo-prime with @size bits length.
     Optional arg @k=25 defines number of tests.
@@ -73,7 +73,7 @@ def generate_prime(size, k=25):
     return
 
 
-def generate_prime_from_string(s, size=None, k=25):
+def generate_prime_from_string(s: str, size: Optional[int] = None, k: int = 25) -> int:
     """
     Generate a pseudo-prime starting with @s in string representation.
     Optional arg @size defines length in bits, if is not set than +some bytes.
@@ -94,7 +94,7 @@ def generate_prime_from_string(s, size=None, k=25):
     extend_len = size - len(s) * 8
 
     visible_part = s2n(s) << extend_len
-    hi = 2 ** extend_len
+    hi = 2**extend_len
 
     while True:
         n = visible_part | random.randint(1, hi) | 1  # only even
@@ -107,7 +107,7 @@ def generate_prime_from_string(s, size=None, k=25):
     return
 
 
-def prime_test_ferma(p, k=25):
+def prime_test_ferma(p: int, k: int = 25) -> bool:
     """
     Test for primality based on Ferma's Little Theorem
     Totally fails in Carmichael'e numbers
@@ -130,7 +130,7 @@ def prime_test_ferma(p, k=25):
     return True
 
 
-def prime_test_solovay_strassen(p, k=25):
+def prime_test_solovay_strassen(p: int, k: int = 25) -> bool:
     """
     Test for primality by Solovai-Strassen
     Stronger than Ferma's test
@@ -156,11 +156,13 @@ def prime_test_solovay_strassen(p, k=25):
     return True
 
 
-def prime_test_miller_rabin(p, k=25):
+def prime_test_miller_rabin(p: Optional[int], k: int = 25) -> bool:
     """
     Test for primality by Miller-Rabin
     Stronger than Solovay-Strassen's test
     """
+    if p is None:
+        return False
     if p < 2:
         return False
     if p <= 3:
@@ -191,7 +193,7 @@ def prime_test_miller_rabin(p, k=25):
                 if i < s - 1:
                     break  # good
                 else:
-                    return False   # bad
+                    return False  # bad
         else:
             # result is not 1
             return False

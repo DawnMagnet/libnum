@@ -1,12 +1,12 @@
 import operator
-
 from functools import reduce
+from typing import Dict, List
 
 from .common import gcd, xgcd
-from .stuff import factorial_get_prime_pow, factorial
+from .stuff import factorial, factorial_get_prime_pow
 
 
-def has_invmod(a, modulus):
+def has_invmod(a: int, modulus: int) -> bool:
     """
     Check if @a can be inversed under @modulus.
     Call this before calling invmod.
@@ -20,7 +20,7 @@ def has_invmod(a, modulus):
         return True
 
 
-def invmod(a, n):
+def invmod(a: int, n: int) -> int:
     """
     Return 1 / a (mod n).
     @a and @n must be co-primes.
@@ -36,7 +36,7 @@ def invmod(a, n):
         return x % n
 
 
-def solve_crt(remainders, modules):
+def solve_crt(remainders: List[int], modules: List[int]) -> int:
     """
     Solve Chinese Remainder Theorem.
     @modules and @remainders are lists.
@@ -64,7 +64,7 @@ def solve_crt(remainders, modules):
     return x % N
 
 
-def nCk_mod(n, k, factors):
+def nCk_mod(n: int, k: int, factors: Dict[int, int]) -> int:
     """
     Compute nCk modulo, factorization of modulus is needed
     """
@@ -72,18 +72,18 @@ def nCk_mod(n, k, factors):
     mods = []
     for p, e in factors.items():
         rems.append(nCk_mod_prime_power(n, k, p, e))
-        mods.append(p ** e)
+        mods.append(p**e)
     return solve_crt(rems, mods)
 
 
-def factorial_mod(n, factors):
+def factorial_mod(n: int, factors: Dict[int, int]) -> int:
     """
     Compute factorial modulo, factorization of modulus is needed
     """
     rems = []
     mods = []
     for p, e in factors.items():
-        pe = p ** e
+        pe = p**e
         if n >= pe or factorial_get_prime_pow(n, p) >= e:
             factmod = 0
         else:
@@ -93,7 +93,7 @@ def factorial_mod(n, factors):
     return solve_crt(rems, mods)
 
 
-def nCk_mod_prime_power(n, k, p, e):
+def nCk_mod_prime_power(n: int, k: int, p: int, e: int) -> int:
     """
     Compute nCk mod small prime power: p**e
     Algorithm by Andrew Granville:
@@ -110,7 +110,7 @@ def nCk_mod_prime_power(n, k, p, e):
         return res
 
     def nCk_get_non_prime_part(n, k, p, e):
-        pe = p ** e
+        pe = p**e
         r = n - k
 
         fact_pe = [1]
@@ -154,5 +154,5 @@ def nCk_mod_prime_power(n, k, p, e):
 
     modpow = e - prime_part_pow
 
-    r = nCk_get_non_prime_part(n, k, p, modpow) % (p ** modpow)
-    return ((p ** prime_part_pow) * r) % (p ** e)
+    r = nCk_get_non_prime_part(n, k, p, modpow) % (p**modpow)
+    return ((p**prime_part_pow) * r) % (p**e)

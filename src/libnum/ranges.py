@@ -1,6 +1,6 @@
 import json
-
 from functools import reduce
+from typing import Any, Iterator, List, Tuple
 
 """
 TODO: fix properties for empty
@@ -24,12 +24,12 @@ class Ranges(object):
     - add_range method - unite with (x, y) range
     """
 
-    def __init__(self, *ranges):
-        self._segments = []
-        for (a, b) in ranges:
+    def __init__(self, *ranges: Tuple[int, int]):
+        self._segments: List[Tuple[int, int]] = []
+        for a, b in ranges:
             self.add_range(a, b)
 
-    def add_range(self, x, y):
+    def add_range(self, x: int, y: int) -> None:
         if y < x:
             raise ValueError("end is smaller than start: %d < %d" % (y, x))
 
@@ -58,7 +58,7 @@ class Ranges(object):
         self._segments.append((x, y))
         return
 
-    def __or__(self, other):
+    def __or__(self, other: "Ranges") -> "Ranges":
         res = Ranges()
         for x, y in self._segments:
             res.add_range(x, y)
@@ -66,7 +66,7 @@ class Ranges(object):
             res.add_range(x, y)
         return res
 
-    def __and__(self, other):
+    def __and__(self, other: "Ranges") -> "Ranges":
         res = []
         index1 = 0
         index2 = 0
@@ -97,48 +97,45 @@ class Ranges(object):
             index1 += 1
         return Ranges(*res)
 
-    def __iter__(self):
+    def __iter__(self) -> Iterator[int]:
         for a, b in self._segments:
             while a <= b:
                 yield a
                 a += 1
         return
 
-    def __eq__(self, other):
+    def __eq__(self, other: Any) -> bool:
         return self.segments == other.segments
 
     @property
-    def len(self):
-        return reduce(
-            lambda acc, ab: acc + 1 + ab[1] - ab[0],
-            self._segments, 0
-        )
+    def len(self) -> int:
+        return reduce(lambda acc, ab: acc + 1 + ab[1] - ab[0], self._segments, 0)
 
     @property
-    def min(self):
+    def min(self) -> int:
         return self._segments[0][0]
 
     @property
-    def max(self):
+    def max(self) -> int:
         return self._segments[-1][1]
 
     @property
-    def segments(self):
+    def segments(self) -> Tuple[Tuple[int, int], ...]:
         return tuple(self._segments)
 
-    def __str__(self):
+    def __str__(self) -> str:
         return str(self.segments)
 
-    def __contains__(self, other):
+    def __contains__(self, other: int) -> bool:
         assert isinstance(other, int)
         for a, b in self._segments:
             if a <= other <= b:
                 return True
         return False
 
-    def to_json(self):
+    def to_json(self) -> str:
         return json.dumps(self._segments)
 
     @classmethod
-    def from_json(cls, j):
+    def from_json(cls, j: str) -> "Ranges":
         return Ranges(*json.loads(j))

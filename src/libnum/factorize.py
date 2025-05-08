@@ -4,11 +4,10 @@ Some factorization methods are listed here
 
 import math
 import random
-
 from functools import reduce
-from .primes import primes, prime_test
-from .common import gcd, nroot
 
+from .common import gcd, nroot
+from .primes import prime_test, primes
 
 __all__ = "factorize unfactorize".split()
 
@@ -38,7 +37,8 @@ def rho_pollard_reduce(n, f):
             return g
 
 
-_FUNC_REDUCE = lambda n: rho_pollard_reduce(n, lambda x: (pow(x, 2, n) + 1) % n)
+def _FUNC_REDUCE(n):
+    return rho_pollard_reduce(n, lambda x: (pow(x, 2, n) + 1) % n)
 
 
 def factorize(n):
@@ -69,6 +69,7 @@ def factorize(n):
     while factors:
         n = factors.pop()
 
+        p = None
         if prime_test(n):
             p = n
             prime_factors[p] = prime_factors.get(p, 0) + 1
