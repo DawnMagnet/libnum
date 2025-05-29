@@ -68,8 +68,8 @@ def nCk_mod(n: int, k: int, factors: Dict[int, int]) -> int:
     """
     Compute nCk modulo, factorization of modulus is needed
     """
-    rems = []
-    mods = []
+    rems: List[int] = []
+    mods: List[int] = []
     for p, e in factors.items():
         rems.append(nCk_mod_prime_power(n, k, p, e))
         mods.append(p**e)
@@ -80,8 +80,8 @@ def factorial_mod(n: int, factors: Dict[int, int]) -> int:
     """
     Compute factorial modulo, factorization of modulus is needed
     """
-    rems = []
-    mods = []
+    rems: List[int] = []
+    mods: List[int] = []
     for p, e in factors.items():
         pe = p**e
         if n >= pe or factorial_get_prime_pow(n, p) >= e:

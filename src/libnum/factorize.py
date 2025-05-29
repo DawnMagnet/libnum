@@ -5,18 +5,19 @@ Some factorization methods are listed here
 import math
 import random
 from functools import reduce
+from typing import Callable, Dict, List, Optional
 
 from .common import gcd, nroot
 from .primes import prime_test, primes
 
-__all__ = "factorize unfactorize".split()
+__all__ = ["factorize", "unfactorize"]
 
 
-_PRIMES_CHECK = primes(100)
-_PRIMES_P1 = primes(100)
+_PRIMES_CHECK: List[int] = primes(100)
+_PRIMES_P1: List[int] = primes(100)
 
 
-def rho_pollard_reduce(n, f):
+def rho_pollard_reduce(n: int, f: Callable[[int], int]) -> int:
     # use Pollard's (p-1) method to narrow down search
     a = random.randint(2, n - 2)
     for p in _PRIMES_P1:
@@ -37,11 +38,11 @@ def rho_pollard_reduce(n, f):
             return g
 
 
-def _FUNC_REDUCE(n):
+def _FUNC_REDUCE(n: int) -> int:
     return rho_pollard_reduce(n, lambda x: (pow(x, 2, n) + 1) % n)
 
 
-def factorize(n):
+def factorize(n: int) -> Dict[int, int]:
     """
     Use _FUNC_REDUCE (defaults to rho-pollard method) to factorize @n
     Return a dict like {p: e}
@@ -49,7 +50,7 @@ def factorize(n):
     if n in (0, 1):
         return {n: 1}
 
-    prime_factors = {}
+    prime_factors: Dict[int, int] = {}
 
     if n < 0:
         n = -n
@@ -60,7 +61,7 @@ def factorize(n):
             prime_factors[p] = prime_factors.get(p, 0) + 1
             n //= p
 
-    factors = [n]
+    factors: List[int] = [n]
     if n == 1:
         if not prime_factors:
             prime_factors[1] = 1
@@ -69,7 +70,7 @@ def factorize(n):
     while factors:
         n = factors.pop()
 
-        p = None
+        p: Optional[int] = None
         if prime_test(n):
             p = n
             prime_factors[p] = prime_factors.get(p, 0) + 1
@@ -77,8 +78,8 @@ def factorize(n):
 
         is_pp = is_power(n)
         if is_pp:
+            p, e = is_pp
             if prime_test(p):
-                p, e = is_pp
                 prime_factors[p] = prime_factors.get(p, 0) + e
                 continue
             # else we need to factor @p and remember power
@@ -93,14 +94,14 @@ def factorize(n):
     return prime_factors
 
 
-def unfactorize(factors):
+def unfactorize(factors: Dict[int, int]) -> int:
     return reduce(lambda acc, p_e: acc * (p_e[0] ** p_e[1]), factors.items(), 1)
 
 
-def is_power(n):
+def is_power(n: int) -> Optional[tuple[int, int]]:
     limit = int(math.log(n, 2))
     for power in range(limit, 1, -1):
         p = nroot(n, power)
         if pow(p, power) == n:
             return p, power
-    return False
+    return None
